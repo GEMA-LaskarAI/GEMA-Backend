@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
+from datetime import timedelta
 from dotenv import load_dotenv
 from urllib.parse import quote_plus
 
@@ -9,7 +10,6 @@ from model.models import db
 from controller.auth import auth_bp
 from controller.questions import questions_bp
 from controller.answers import answers_bp
-
 
 load_dotenv()
 
@@ -28,6 +28,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1)
 jwt = JWTManager(app)
 
 db.init_app(app)
