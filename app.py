@@ -39,4 +39,16 @@ app.register_blueprint(answers_bp)
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
-    app.run(debug=True, host='0.0.0.0', port=port)
+    if os.getenv('ENV') == 'local':
+        app.run(
+            debug=True,
+            host='0.0.0.0',
+            port=port
+        )
+    if os.getenv('ENV') == 'development':
+        app.run(
+            debug=True,
+            host='0.0.0.0',
+            port=port,
+            ssl_context=('cert.pem', 'key.pem')
+        )
