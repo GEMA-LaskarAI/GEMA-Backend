@@ -1,5 +1,5 @@
 CREATE TABLE gema_questions (
-    id SERIAL PRIMARY KEY,
+    id VARCHAR PRIMARY KEY,
     type VARCHAR,
     text TEXT
 );

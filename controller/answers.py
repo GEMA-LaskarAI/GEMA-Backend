@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt
-from model.models import db, StudentAnswer
+from ml_model.main import recommend_majors
 
 answers_bp = Blueprint('answers', __name__)
 
@@ -11,22 +11,13 @@ def submit_answers():
     jwt_data = get_jwt()
     student_id = jwt_data.get("id")
 
+    if not student_id:
+        return jsonify(message="Unauthorized. Student ID not found in token."), 401
+    
     if not isinstance(data, list):
         return jsonify(message="Invalid data format. Expected a list."), 400
 
-    for answer in data:
-        question_id = answer.get("question_id")
-        score = answer.get("score")
-        if question_id is None or score is None:
-            continue 
+    answer = [answer['score'] for answer in data]
+    recommendations = recommend_majors(answer)
 
-        new_answer = StudentAnswer(
-            student_id=student_id,
-            question_id=question_id,
-            score=score
-        )
-        db.session.add(new_answer)
-
-    db.session.commit()
-
-    return jsonify(message="Success"), 201
+    return jsonify(message="Success", data=recommendations), 200

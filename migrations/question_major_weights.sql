@@ -1,6 +1,6 @@
 CREATE TABLE gema_question_major_weights (
-    id SERIAL PRIMARY KEY,
-    question_id INT,
-    major_id INT,
+    id VARCHAR PRIMARY KEY,
+    question_id VARCHAR,
+    major_id VARCHAR,
     weight INT
 );

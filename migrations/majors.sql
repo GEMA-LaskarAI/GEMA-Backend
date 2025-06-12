@@ -1,5 +1,5 @@
 CREATE TABLE gema_majors (
-    id SERIAL PRIMARY KEY,
+    id VARCHAR PRIMARY KEY,
     name VARCHAR,
     description TEXT
 );
