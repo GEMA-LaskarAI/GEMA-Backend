@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt
 from ml_model.main import recommend_majors
+from model.models import db, StudentRecommendation
 
 answers_bp = Blueprint('answers', __name__)
 
@@ -19,5 +20,15 @@ def submit_answers():
 
     answer = [answer['score'] for answer in data]
     recommendations = recommend_majors(answer)
+
+    StudentRecommendation.query.filter_by(student_id=student_id).delete()
+    for rec in recommendations:
+        recommendation = StudentRecommendation(
+            student_id=student_id,
+            major_id=rec['major_id']
+        )
+        db.session.add(recommendation)
+
+    db.session.commit()
 
     return jsonify(message="Success", data=recommendations), 200

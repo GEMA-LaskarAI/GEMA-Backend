@@ -20,15 +20,23 @@ class Student(db.Model):
 class Question(db.Model):
     __tablename__ = 'gema_questions'
     
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String, primary_key=True)
     type = db.Column(db.String)
     text = db.Column(db.Text)
 
-class StudentAnswer(db.Model):
-    __tablename__ = 'gema_student_answers'
+class Major(db.Model):
+    __tablename__ = 'gema_majors'
+
+    id = db.Column(db.String, primary_key=True)
+    name = db.Column(db.String)
+    description = db.Column(db.Text)
+
+class StudentRecommendation(db.Model):
+    __tablename__ = 'gema_student_recommendations'
 
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer)
-    question_id = db.Column(db.Integer)
-    score = db.Column(db.Integer)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    student_id = db.Column(db.Integer, db.ForeignKey('gema_students.id'))
+    major_id = db.Column(db.String, db.ForeignKey('gema_majors.id'))
+
+    student = db.relationship('Student', backref=db.backref('recommendations', lazy=True))
+    major = db.relationship('Major', backref=db.backref('recommended_to_students', lazy=True))

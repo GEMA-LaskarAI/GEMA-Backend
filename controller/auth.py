@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from model.models import db, Student
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -54,3 +54,37 @@ def login():
         ), 200
 
     return jsonify(message="Invalid credentials"), 401
+
+@auth_bp.route('/profile', methods=['GET'])
+@jwt_required()
+def profile():
+    jwt_data = get_jwt()
+    student_id = jwt_data.get("id")
+
+    if not student_id:
+        return jsonify(message="Unauthorized. Student ID not found in token."), 401
+
+    student = Student.query.get(student_id)
+    if not student:
+        return jsonify(message="Student not found"), 404
+    
+    recommendations = [
+        {
+            "major_id": rec.major.id,
+            "name": rec.major.name,
+            "description": rec.major.description
+        }
+        for rec in student.recommendations
+    ]
+
+    return jsonify(
+        message="Success",
+        data={
+            "student": {
+                "id": student.id,
+                "name": student.name,
+                "email": student.email,
+                "recommendations": recommendations
+            }
+        }
+    ), 200
